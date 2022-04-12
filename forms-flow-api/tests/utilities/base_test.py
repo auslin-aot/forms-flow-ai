@@ -186,3 +186,13 @@ def update_dashboard_payload():
 def get_locale_update_valid_payload():
     """Returns a payload for updating the locale attribute."""
     return {"locale": "en"}
+
+def get_authorization_request_payload():
+    """Return authorization request payload"""
+    return {
+        "category":"Formid authorization",
+        "identity": "test_user",
+        "permissions": "all",
+        "resourceId": "123",
+        "type": "allow"
+    }
