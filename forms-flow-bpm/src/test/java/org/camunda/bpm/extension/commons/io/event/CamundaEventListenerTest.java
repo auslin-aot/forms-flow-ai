@@ -6,7 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+//import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -25,8 +26,11 @@ public class CamundaEventListenerTest {
 	@InjectMocks
 	public CamundaEventListener camundaEventListener;
 
+//	@Mock
+//	private SimpMessagingTemplate template;
+
 	@Mock
-	private SimpMessagingTemplate template;
+	private StringRedisTemplate template;
 
 	/**
 	 * Test perform a positive test over onTaskEventListener

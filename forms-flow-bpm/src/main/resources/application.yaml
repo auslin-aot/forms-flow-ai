@@ -188,4 +188,7 @@ websocket:
     secretKey: ${WEBSOCKET_ENCRYPT_KEY}
   messageType: ${WEBSOCKET_MESSAGE_TYPE}
   messageEvents: ${WEBSOCKET_MESSAGE_EVENTS:DEFAULT}
+  messageBroker:
+    host: localhost
+    port: 6379
 

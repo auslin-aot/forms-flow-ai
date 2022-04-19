@@ -2,6 +2,15 @@
 version: '3.7'
 
 services:
+  redis-server:
+    container_name: redis
+    image: redis
+    ports:
+      - '6379:6379'
+    restart: always
+    networks:
+      - forms-flow-network
+
   forms-flow-bpm-db:
     image: postgres:latest
     container_name: forms-flow-bpm-db
@@ -25,6 +34,7 @@ services:
     restart: always
     links:
       - forms-flow-bpm-db
+      - redis-server
     ports:
       - '8000:8080'
     environment:
