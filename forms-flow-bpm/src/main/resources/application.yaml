@@ -189,8 +189,8 @@ websocket:
   messageType: ${WEBSOCKET_MESSAGE_TYPE}
   messageEvents: ${WEBSOCKET_MESSAGE_EVENTS:DEFAULT}
   messageBroker:
-    host: localhost
-    port: 6379
+    host: ${WEBSOCKET_BROKER_HOST}
+    port: ${WEBSOCKET_BROKER_PORT}
 
 # Redis Config
 spring.cache.type: redis

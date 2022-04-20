@@ -60,7 +60,7 @@ class ApplicationService:
         return application, HTTPStatus.CREATED
 
     @staticmethod
-    @lru_cache(maxsize=32)
+    # @lru_cache(maxsize=32)
     def get_authorised_form_list(token):
         """
         Function to get the authorized forms based on token passed.
