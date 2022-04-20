@@ -191,6 +191,7 @@ websocket:
   messageBroker:
     host: ${WEBSOCKET_BROKER_HOST}
     port: ${WEBSOCKET_BROKER_PORT}
+    passcode: ${WEBSOCKET_BROKER_PASSCODE}
 
 # Redis Config
 spring.cache.type: redis

@@ -5,6 +5,7 @@ services:
   redis-server:
     container_name: redis
     image: redis
+    command: redis-server --requirepass changeme
     ports:
       - '6379:6379'
     restart: always
@@ -74,6 +75,7 @@ services:
       - IDENTITY_PROVIDER_MAX_RESULT_SIZE=${IDENTITY_PROVIDER_MAX_RESULT_SIZE:-250}
       - WEBSOCKET_BROKER_HOST=${WEBSOCKET_BROKER_HOST:-redis}
       - WEBSOCKET_BROKER_PORT=${WEBSOCKET_BROKER_PORT:-6379}
+      - WEBSOCKET_BROKER_PASSCODE=${WEBSOCKET_BROKER_PASSCODE:-changeme}
     networks:
       - forms-flow-network
  

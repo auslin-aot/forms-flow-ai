@@ -34,13 +34,13 @@ public class RedisConfig implements ITaskEvent {
     @Value("${websocket.messageBroker.port}")
     private String messageBrokerPort;
 
-    // @Value("${websocket.messageBroker.passcode}")
-    // private String messageBrokerPasscode;
+    @Value("${websocket.messageBroker.passcode}")
+    private String messageBrokerPasscode;
 
     @Bean
     RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(messageBrokerHost,Integer.valueOf(messageBrokerPort));
-        // redisStandaloneConfiguration.setPassword(messageBrokerPasscode);
+        redisStandaloneConfiguration.setPassword(messageBrokerPasscode);
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
