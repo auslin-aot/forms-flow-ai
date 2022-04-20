@@ -18,3 +18,5 @@ from .format import CustomFormatter
 from .logging import setup_logging
 from .profiler import profiletime
 from .util import cors_preflight, translate, validate_sort_order_and_order_by
+from .caching import cache
+

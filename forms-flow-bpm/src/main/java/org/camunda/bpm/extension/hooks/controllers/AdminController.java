@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.cache.annotation.Cacheable;
 
 import javax.servlet.ServletException;
 import java.util.*;
@@ -55,6 +56,7 @@ public class AdminController {
     @Value("${formsflow.ai.api.url}")
     private String formsflowApiUrl;
 
+    @Cacheable(value="cacheAuthorization", key="#id")
     @GetMapping(value = "/engine-rest-ext/form/authorization", produces = MediaType.APPLICATION_JSON_VALUE)
     private @ResponseBody AuthorizationInfo getFormAuthorization() throws ServletException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

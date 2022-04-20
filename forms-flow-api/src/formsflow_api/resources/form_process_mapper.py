@@ -12,7 +12,7 @@ from formsflow_api.schemas import (
     FormProcessMapperSchema,
 )
 from formsflow_api.services import ApplicationService, FormProcessMapperService
-from formsflow_api.utils import auth, cors_preflight, profiletime
+from formsflow_api.utils import auth, cors_preflight, profiletime, cache
 
 API = Namespace("Form", description="Form")
 
@@ -24,6 +24,7 @@ class FormResourceList(Resource):
 
     @staticmethod
     @auth.require
+    @cache.cached(timeout=50, key_prefix='form_list')
     @profiletime
     def get():  # pylint: disable=too-many-locals
         """Get form process mapper.

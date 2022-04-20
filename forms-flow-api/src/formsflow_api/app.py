@@ -22,6 +22,7 @@ from formsflow_api.utils import (
     jwt,
     setup_logging,
     translate,
+    cache,
 )
 
 
@@ -31,7 +32,7 @@ def create_app(run_mode=os.getenv("FLASK_ENV", "production")):
     app.wsgi_app = ProxyFix(app.wsgi_app)
     app.config.from_object(config.CONFIGURATION[run_mode])
     app.logger.removeHandler(default_handler)
-
+    cache.init_app(app)
     flask_logger = setup_logging(
         os.path.join(os.path.abspath(os.path.dirname(__file__)), "logging.conf")
     )  # important to do this first

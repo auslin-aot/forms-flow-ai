@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.cache.annotation.EnableCaching;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -28,6 +29,7 @@ import java.util.Properties;
 @EnableConfigurationProperties
 @PropertySource("classpath:application.yaml")
 @SpringBootApplication(scanBasePackages = {"org.camunda.bpm.extension"}, exclude = ReactiveOAuth2ClientAutoConfiguration.class)
+@EnableCaching
 @EnableProcessApplication("camunda.showcase")
 public class CamundaApplication {
 
