@@ -4,7 +4,8 @@ info:
   description: The API for forms-flow-forms.
   version: 1.0.0
 servers:
-  - url: http://localhost:3001
+  - url: 'http://{{baseurl}}'
+  - url: 'http://localhost:3001'
 paths:
   /user/login:
     post:
