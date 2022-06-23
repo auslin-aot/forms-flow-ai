@@ -17,10 +17,11 @@ paths:
           application/json:
             schema:
               type: object
-              example:
-                data:
-                  email: admin@example.com
-                  password: changeme
+              examples:
+                example-1:
+                  data:
+                    email: admin@example.com
+                    password: changeme
       responses:
         '200':
           description: OK
