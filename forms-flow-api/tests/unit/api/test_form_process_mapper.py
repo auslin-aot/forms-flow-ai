@@ -256,6 +256,8 @@ def test_formio_form_creation(app, client, session, jwt):
     """Testing formio form create API."""
     token = get_token(jwt, role="formsflow-designer", username="designer")
     headers = {"Authorization": f"Bearer {token}", "content-type": "application/json"}
-    data = get_formio_form_request_payload().get_json()
-    response = client.post("/form/form-create", headers=headers, json=data)    
+    data = get_formio_form_request_payload()
+    import json
+    data = json.dumps(data)
+    response = client.post("/form/form-create", headers=headers, json=data)
     assert response.status_code == 201
