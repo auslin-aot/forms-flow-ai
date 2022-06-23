@@ -77,7 +77,7 @@ jobs:
       USE_DOCKER_MOCK: "True"
       FORMIO_URL: http://localhost:8080
       FORMIO_ROOT_EMAIL: admin@example.com
-      FORMIO_PASSWORD: changeme
+      FORMIO_ROOT_PASSWORD: changeme
 
 
     runs-on: ubuntu-20.04
