@@ -1,5 +1,4 @@
 """Test suite for FormProcessMapper API endpoint."""
-import re
 import pytest
 
 from tests.utilities.base_test import (

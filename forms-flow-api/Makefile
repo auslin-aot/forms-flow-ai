@@ -72,7 +72,7 @@ flake8: ## Linting with flake8
 lint: format pylint flake8 ## run all lint type scripts
 
 test: ## Unit testing
-	. venv/bin/activate && pytest
+	. venv/bin/activate && pytest -s
 
 test-verbose: ## Unit testing with detailed error messages
 	. venv/bin/activate && pytest -vv
