@@ -461,9 +461,9 @@ def get_formio_form_request_payload():
                 "addons": []
             }
         ],
-        "name": "testform",
-        "path": "testform",
-        "title": "testform",
+        "name": "testcreateform",
+        "path": "testcreateform",
+        "title": "testcreateform",
         "tags": [
             "common"
         ],
