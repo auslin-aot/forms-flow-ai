@@ -47,8 +47,10 @@ class FormioService:
             }
         }
         current_app.logger.info("Generate formio token using formio login API.")
+        print(url, headers,payload,"formio token")
         response = requests.post(url, headers=headers, data=json.dumps(payload))
         if response.ok:
+            print("response ok")
             form_io_token = response.headers["x-jwt-token"]
             return form_io_token
         # raise BusinessException(
