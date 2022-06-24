@@ -17,10 +17,12 @@ paths:
           application/json:
             schema:
               type: object
-              example:
-                data:
-                  email: test@test.com
-                  password: test
+              examples:
+                example-1:
+                  value:
+                  data:
+                    email: test@test.com
+                    password: test
       responses:
         '200':
           description: OK
@@ -74,18 +76,20 @@ paths:
             application/json:
               schema:
                 type: object
-              example:
-                _id: 628f0ee219cebb9cea4f12b2
-                form: 628f0ee019cebb9cea4f123f
-                owner: 628f0ee219cebb9cea4f12b2
-                roles:
-                  - 628f0edf19cebb9cea4f1226
-                data:
-                  email: admin@example.com
-                access: []
-                externalIds: []
-                created: '2022-05-26T05:23:46.195Z'
-                modified: '2022-05-26T05:23:46.197Z'
+              examples:
+                example-1:
+                  value:
+                    _id: 628f0ee219cebb9cea4f12b2
+                    form: 628f0ee019cebb9cea4f123f
+                    owner: 628f0ee219cebb9cea4f12b2
+                    roles:
+                      - 628f0edf19cebb9cea4f1226
+                    data:
+                      email: test@test.com
+                    access: []
+                    externalIds: []
+                    created: '2022-05-26T05:23:46.195Z'
+                    modified: '2022-05-26T05:23:46.197Z'
   /form:
     post:
       tags:
