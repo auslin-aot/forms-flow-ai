@@ -12,7 +12,7 @@ services:
     command: >
       mock -p 4010 --host 0.0.0.0
       https://raw.githubusercontent.com/sumesh-aot/forms-flow-ai/bpm-mock/forms-flow-analytics/api-spec/forms-flow-analytics-api-spec.yaml
-  formio:
+  forms:
     image: stoplight/prism:3.3.0
     command: >
       mock -p 4010 --host 0.0.0.0
@@ -26,7 +26,7 @@ services:
     depends_on:
       - bpm
       - analytics
-      - formio
+      - forms
 
   keycloak:
     image: quay.io/keycloak/keycloak:14.0.0

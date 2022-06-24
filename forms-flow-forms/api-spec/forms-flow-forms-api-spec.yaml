@@ -20,8 +20,8 @@ paths:
               examples:
                 example-1:
                   data:
-                    email: admin@example.com
-                    password: changeme
+                    email: test@test.com
+                    password: test
       responses:
         '200':
           description: OK
