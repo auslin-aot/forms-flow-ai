@@ -75,7 +75,7 @@ test: ## Unit testing
 	. venv/bin/activate && pytest
 
 test-verbose: ## Unit testing with detailed error messages
-	. venv/bin/activate && pytest -vv -s
+	. venv/bin/activate && pytest -vv
 
 #################################################################################
 # COMMANDS - Local                                                              #

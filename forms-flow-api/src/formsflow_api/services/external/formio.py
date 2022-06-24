@@ -47,15 +47,13 @@ class FormioService:
             }
         }
         current_app.logger.info("Generate formio token using formio login API.")
-        print(url, headers,payload,"formio token")
         response = requests.post(url, headers=headers, data=json.dumps(payload))
-        print(response.text,"resp")
         if response.ok:
             form_io_token = response.headers["x-jwt-token"]
             return form_io_token
-        # raise BusinessException(
-        #     "Unable to get access token from formio server", HTTPStatus.BAD_REQUEST
-        # )
+        raise BusinessException(
+            "Unable to get access token from formio server", HTTPStatus.BAD_REQUEST
+        )
 
     def create_form(self, data, formio_token):
         """Post request to formio API to create form."""
