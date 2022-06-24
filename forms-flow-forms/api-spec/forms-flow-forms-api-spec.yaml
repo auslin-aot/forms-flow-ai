@@ -55,7 +55,7 @@ paths:
             Content-Length:
               schema:
                 type: integer
-                example: '281'
+                example: 281
             ETag:
               schema:
                 type: string
@@ -466,7 +466,7 @@ paths:
             Content-Length:
               schema:
                 type: integer
-                example: '5674'
+                example: 5674
             ETag:
               schema:
                 type: string
