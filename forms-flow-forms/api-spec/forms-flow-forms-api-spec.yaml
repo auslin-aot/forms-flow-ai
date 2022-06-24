@@ -52,10 +52,6 @@ paths:
               schema:
                 type: string
                 example: application/json; charset=utf-8
-            Content-Length:
-              schema:
-                type: integer
-                example: 281
             ETag:
               schema:
                 type: string
@@ -463,10 +459,6 @@ paths:
               schema:
                 type: string
                 example: application/json; charset=utf-8
-            Content-Length:
-              schema:
-                type: integer
-                example: 5674
             ETag:
               schema:
                 type: string
