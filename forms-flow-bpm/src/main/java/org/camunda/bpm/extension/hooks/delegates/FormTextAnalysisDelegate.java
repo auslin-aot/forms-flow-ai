@@ -1,5 +1,6 @@
 package org.camunda.bpm.extension.hooks.delegates;
 
+import com.google.gson.JsonObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -11,6 +12,7 @@ import org.camunda.bpm.extension.hooks.delegates.data.TextSentimentRequest;
 import org.camunda.bpm.extension.hooks.exceptions.AnalysisServiceException;
 import org.camunda.bpm.extension.hooks.exceptions.FormioServiceException;
 import org.camunda.bpm.extension.hooks.listeners.data.FormElement;
+import org.springframework.beans.factory.annotation.Value;
 import org.camunda.bpm.extension.hooks.services.FormSubmissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,13 +53,20 @@ public class FormTextAnalysisDelegate implements JavaDelegate {
     @Autowired
     private HTTPServiceInvoker httpServiceInvoker;
 
+    @Value("${formsflow.ai.enableCustomSubmission}")
+    private boolean enableCustomSubmission;
+
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         TextSentimentRequest textSentimentRequest = prepareAnalysisRequest(execution);
         if(textSentimentRequest != null) {
             ResponseEntity<IResponse> response =  httpServiceInvoker.execute(getAnalysisUrl(), HttpMethod.POST,textSentimentRequest, TextSentimentRequest.class);
             if(response.getStatusCode().value() == HttpStatus.OK.value() && response.getBody() != null) {
-                prepareAndPatchFormData(execution, (TextSentimentRequest) response.getBody());
+                if (enableCustomSubmission) {
+                    prepareAndPatchFormDataCustomSubmission(execution, (TextSentimentRequest) response.getBody());
+                }else{
+                    prepareAndPatchFormData(execution, (TextSentimentRequest) response.getBody());
+                }
             } else {
                 throw new AnalysisServiceException("Unable to read submission for: "+ getAnalysisUrl()+ ". Message Body: " +
                         response.getBody());
@@ -68,6 +77,7 @@ public class FormTextAnalysisDelegate implements JavaDelegate {
     private TextSentimentRequest prepareAnalysisRequest(DelegateExecution execution) throws JsonProcessingException {
         List<TextSentimentData> txtRecords = new ArrayList<>();
         String submission = formSubmissionService.readSubmission(String.valueOf(execution.getVariables().get(FORM_URL)));
+        LOGGER.error("sentiment submission........");
         if(submission.isEmpty()) {
             throw new RuntimeException("Unable to retrieve submission");
         }
@@ -90,18 +100,47 @@ public class FormTextAnalysisDelegate implements JavaDelegate {
 
     public void prepareAndPatchFormData(DelegateExecution execution, TextSentimentRequest textSentimentRequest) throws IOException {
         List<FormElement> elements = new ArrayList<>();
+        LOGGER.error("patch form data.......");
         if(textSentimentRequest.getData() != null) {
+            LOGGER.error(String.valueOf(textSentimentRequest.getData()));
             for (TextSentimentData textSentimentData : textSentimentRequest.getData()) {
                 elements.add(new FormElement(textSentimentData.getElementId(), "overallSentiment",
                         textSentimentData.getOverallSentiment()));
             }
         }
+        LOGGER.error("elements form........");
+        LOGGER.error(String.valueOf(elements));
         ResponseEntity<String> response = httpServiceInvoker.execute(getFormUrl(execution), HttpMethod.PATCH, elements);
         if(response.getStatusCodeValue() != HttpStatus.OK.value()) {
             throw new FormioServiceException("Unable to get patch values for: "+ getFormUrl(execution)+ ". Message Body: " +
                     response.getBody());
         }
     }
+
+    public void prepareAndPatchFormDataCustomSubmission(DelegateExecution execution, TextSentimentRequest textSentimentRequest) throws IOException {
+        JsonObject sentiment_data = new JsonObject();
+        JsonObject data = new JsonObject();
+        JsonObject payload = new JsonObject();
+        LOGGER.error("patch form data. custom submission......");
+        if(textSentimentRequest.getData() != null) {
+            for (TextSentimentData textSentimentData : textSentimentRequest.getData()) {
+                LOGGER.error(String.valueOf(textSentimentData.getElementId()));
+                sentiment_data.addProperty("overallSentiment",
+                        textSentimentData.getOverallSentiment());
+
+                data.add(String.valueOf(textSentimentData.getElementId()), sentiment_data);
+            }
+            payload.add("data", data);
+        }
+        LOGGER.error(String.valueOf(payload));
+        ResponseEntity<String> response = httpServiceInvoker.execute(getFormUrl(execution), HttpMethod.PUT, String.valueOf(payload));
+        if(response.getStatusCodeValue() != HttpStatus.OK.value()) {
+            throw new FormioServiceException("Unable to get patch values for: "+ getFormUrl(execution)+ ". Message Body: " +
+                    response.getBody());
+        }
+    }
+
+
 
     private String getAnalysisUrl(){
         return httpServiceInvoker.getProperties().getProperty("analysis.url")+"/sentiment";

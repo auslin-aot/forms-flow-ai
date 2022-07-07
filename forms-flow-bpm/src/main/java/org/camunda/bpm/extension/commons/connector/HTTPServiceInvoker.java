@@ -8,6 +8,7 @@ import org.camunda.bpm.extension.commons.ro.res.IResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -39,6 +40,9 @@ public class HTTPServiceInvoker {
     @Autowired
     private Properties integrationCredentialProperties;
 
+    @Value("${formsflow.ai.enableCustomSubmission}")
+	private boolean enableCustomSubmission;
+
     public ResponseEntity<String> execute(String url, HttpMethod method, Object payload) throws IOException {
         String dataJson = payload != null ? bpmObjectMapper.writeValueAsString(payload) : null;
         return execute(url, method, dataJson);
@@ -64,9 +68,14 @@ public class HTTPServiceInvoker {
 			return BPM_ACCESS_HANDLER;
 		} else if (isUrlValid(url, fetchUrlFromProperty(ANALYSIS_URL))) {
 			return TEXT_ANALYZER_ACCESS_HANDLER;
-		} else {
-			return FORM_ACCESS_HANDLER;
-		}
+		} 
+        else {
+            if (enableCustomSubmission) {
+			    return APPLICATION_ACCESS_HANDLER;
+            } else {
+                return FORM_ACCESS_HANDLER;
+            }
+            }
     }
 	
 	private String fetchUrlFromProperty(String key) {
