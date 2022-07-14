@@ -233,6 +233,7 @@ const doProcessActions = (submission, ownProps,) => {
     const data = getProcessReq(form, submission._id, "new", user);
     const tenantKey = getState().tenants?.tenantId;
     const redirectUrl = MULTITENANCY_ENABLED ? `/tenant/${tenantKey}/` : `/`;
+    
     if (!IsAuth) {
       // this is for anonymous
       dispatch(
