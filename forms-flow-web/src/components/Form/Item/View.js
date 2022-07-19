@@ -213,7 +213,7 @@ const View = React.memo((props) => {
             }}
             hideComponents={hideComponents}
             onSubmit={(data) => {
-              onSubmit(data, form._id);
+              onSubmit(data, form._id, isPublic);
             }}
             onCustomEvent={(evt) => onCustomEvent(evt, redirectUrl)}
           />
@@ -313,7 +313,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onSubmit: (submission, formId) => {
+    onSubmit: (submission, formId, isPublic) => {
       dispatch(setFormSubmissionLoading(true));
       // this is callback function for submission
       const callBack = (err, submission) => {
@@ -336,7 +336,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         }
       };
       if(CUSTOM_SUBMISSION_URL && CUSTOM_SUBMISSION_ENABLE) {
-        postCustomSubmission(submission,formId,callBack);
+        postCustomSubmission(submission,formId,isPublic,callBack);
       } else {
         dispatch(
           saveSubmission("submission", submission, formId,callBack)
