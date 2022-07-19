@@ -20,9 +20,9 @@ export const formCreate = (formData, ...rest) => {
    });
 };
 
-export const postCustomSubmission = (data,formId,...rest)=>{
+export const postCustomSubmission = (data,formId,isPublic,...rest)=>{
   const done = rest.length ? rest[0] : () => {};
-  let newUrl = replaceUrl(API.CUSTOM_SUBMISSION,"<form_id>",formId);
+  let newUrl = isPublic ? replaceUrl(API.PUBLIC_CUSTOM_SUBMISSION,"<form_id>",formId) : replaceUrl(API.CUSTOM_SUBMISSION,"<form_id>",formId);
   httpPOSTRequest(`${newUrl}`,data,UserService.getToken())
   .then((res)=>{
     if(res.data){
