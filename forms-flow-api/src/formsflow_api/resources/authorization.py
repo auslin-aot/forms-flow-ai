@@ -1,9 +1,10 @@
 """Resource to get Dashboard APIs from redash."""
 from http import HTTPStatus
 
-from flask import request
+from flask import current_app, request
 from flask_restx import Namespace, Resource
 from formsflow_api_utils.utils import auth, cors_preflight, profiletime
+from marshmallow.exceptions import ValidationError
 
 from formsflow_api.services import AuthorizationService
 
@@ -30,10 +31,24 @@ class AuthorizationList(Resource):
     @profiletime
     def post(auth_type: str):
         """Create authorization."""
-        return (
-            auth_service.create_authorization(auth_type.upper(), request.get_json()),
-            HTTPStatus.OK,
-        )
+        try:
+            return (
+                auth_service.create_authorization(
+                    auth_type.upper(), request.get_json()
+                ),
+                HTTPStatus.OK,
+            )
+        except ValidationError as err:
+            current_app.logger.warning(err)
+            response, status = {
+                "type": "Bad request error",
+                "message": "Invalid request data",
+            }, HTTPStatus.BAD_REQUEST
+            return response, status
+
+        except Exception as error:
+            current_app.logger.warning(error)
+            raise error
 
 
 @cors_preflight("GET, POST, OPTIONS")

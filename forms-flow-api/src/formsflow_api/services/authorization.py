@@ -5,7 +5,7 @@ from typing import Dict, List
 from formsflow_api_utils.utils.user_context import UserContext, user_context
 
 from formsflow_api.models import Authorization, AuthType
-from formsflow_api.schemas import ApplicationSchema
+from formsflow_api.schemas import ApplicationSchema, AuthorizationFilterSchema
 
 application_schema = ApplicationSchema()
 
@@ -49,6 +49,7 @@ class AuthorizationService:
             "resourceId": auth.resource_id,
             "resourceDetails": auth.resource_details,
             "roles": auth.roles,
+            "id": auth.id,
         }
 
     @user_context
@@ -78,9 +79,14 @@ class AuthorizationService:
             tenant=user.tenant_key,
         )
         roles = resource.get("roles")
+        resource_details = resource.get("resourceDetails")
+        if auth_type == "FILTER":
+            filter_schema = AuthorizationFilterSchema()
+            resource_details = filter_schema.load(resource_details)
+
         if auth:
             auth.roles = roles
-            auth.resource_details = resource.get("resourceDetails")
+            auth.resource_details = resource_details
             auth.modified = datetime.datetime.now()
             auth.modified_by = user.user_name
         else:
