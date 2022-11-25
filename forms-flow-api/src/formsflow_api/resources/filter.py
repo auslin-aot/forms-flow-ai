@@ -4,7 +4,7 @@ from http import HTTPStatus
 from http.client import BAD_REQUEST
 
 from flask import current_app, request
-from flask_restx import Namespace, Resource
+from flask_restx import Namespace, Resource, fields
 from formsflow_api_utils.exceptions import BusinessException
 from formsflow_api_utils.utils import (
     REVIEWER_GROUP,
@@ -21,6 +21,62 @@ filter_schema = FilterSchema()
 
 API = Namespace("Filter", description="Filter APIs")
 
+criteria = API.model(
+    "Criteria",
+    {
+        "CandidateGroup": fields.String(description="Filter task specific to group"),
+        "includeAssignedTasks": fields.Boolean(description="Include assigned task"),
+    },
+)
+
+variable = API.model(
+    "Variables",
+    {
+        "name": fields.String(description="Variable name"),
+        "label": fields.String(description="Display name"),
+    },
+)
+
+properties = API.model(
+    "Properties",
+    {
+        "showUndefinedVariable": fields.Boolean(description="Show undefined variables"),
+        "priority": fields.Integer(description="Show undefined variables"),
+    },
+)
+
+filter = API.model(
+    "Filter",
+    {
+        "name": fields.String(description="Name of the filter"),
+        "description": fields.String(description="Description about filter"),
+        "criteria": fields.Nested(criteria, description="Filter criteria"),
+        "variables": fields.List(
+            fields.Nested(variable, description=" Variables shown in the tasks list"),
+        ),
+        "properties": fields.Nested(properties, description="Properties of filter"),
+        "roles": fields.List(
+            fields.String(), description="Authorized Roles to the filter"
+        ),
+        "users": fields.List(
+            fields.String(), description="Authorized Users to the filter"
+        ),
+    },
+)
+filter_response = API.inherit(
+    "Filter response",
+    filter,
+    {
+        "status": fields.String(description="Status of the filter"),
+        "tenant": fields.String(description="Authorized Tenant to the filter"),
+        "id": fields.Integer(description="Unique id of the filter"),
+        "created": fields.DateTime(description="Created time"),
+        "modified": fields.DateTime(description="Modified time"),
+        "createdBy": fields.String(),
+        "modifiedBy": fields.String(),
+    },
+)
+
 
 @cors_preflight("GET, POST, OPTIONS")
 @API.route("", methods=["GET", "POST", "OPTIONS"])
@@ -30,8 +86,16 @@ class FilterResource(Resource):
     @staticmethod
     @auth.require
     @profiletime
+    @API.doc(
+        responses={200: "OK:- Success", 403: "Permission denied"},
+        model=[filter_response],
+    )
     def get():
-        """List all filters."""
+        """
+        Get all filters.
+
+        List all active filters for requests with ```reviewer permission```.
+        """
         try:
             if auth.has_role([REVIEWER_GROUP]):
                 response, status = FilterService.get_all_filters(), HTTPStatus.OK
@@ -48,8 +112,46 @@ class FilterResource(Resource):
     @staticmethod
     @auth.require
     @profiletime
+    @API.doc(
+        responses={
+            201: "Filter created",
+            403: "Permission denied",
+            400: "Validation Error",
+        },
+        model=filter_response,
+    )
+    @API.expect(filter)
     def post():
-        """Create filter."""
+        """
+        Create filter.
+
+        Post a new filter using request body for requests with ```reviewer permission```.
+        e.g payload,
+        ```
+        {
+            "name": "Test Task",
+            "description": "Filter creation test task",
+            "variables":[
+                    {
+                    "name": "name",
+                    "label": "userName"
+                    }
+                ],
+            "criteria": {
+                "taskCandidateGroup":"/formsflow/formsflow-reviewer",
+                "includeAssignedTasks":true,
+                "condition":"ALL"
+            },
+            "properties": {
+                "showUndefinedVariable":false,
+                "refresh": false,
+                "priority":10
+            },
+            "users": [],
+            "roles": ["/formsflow/formsflow-reviewer"]
+        }
+        ```
+        """
         try:
             if auth.has_role([REVIEWER_GROUP]):
                 filter_data = filter_schema.load(request.get_json())
@@ -83,8 +185,16 @@ class UsersFilterList(Resource):
     @staticmethod
     @auth.require
     @profiletime
+    @API.doc(
+        responses={200: "OK:- Success", 403: "Permission denied"},
+        model=[filter_response],
+    )
     def get():
-        """List filters of current user."""
+        """
+        List filters of current user.
+
+        Get all active filters of current reviewer user for requests with ```reviewer permission```.
+        """
         try:
             if auth.has_role([REVIEWER_GROUP]):
                 response, status = FilterService.get_user_filters(), HTTPStatus.OK
@@ -101,14 +211,23 @@ class UsersFilterList(Resource):
 
 @cors_preflight("PUT, OPTIONS")
 @API.route("/<int:filter_id>", methods=["GET", "PUT", "DELETE", "OPTIONS"])
+@API.doc(params={"filter_id": "Filter details corresponding to filter_id"})
 class FilterResourceById(Resource):
     """Resource for managing filter by id."""
 
     @staticmethod
     @auth.require
     @profiletime
+    @API.doc(
+        responses={200: "OK:- Success", 403: "Permission denied"}, model=filter_response
+    )
     def get(filter_id: int):
-        """Get filter by id."""
+        """
+        Get filter by id.
+
+        Get filter details corresponding to a filter id for requests with ```reviewer permission```.
+        : filter_id:- unique id of filter.
+        """
         try:
             if auth.has_role([REVIEWER_GROUP]):
                 filter_result = FilterService.get_filter_by_id(filter_id)
@@ -139,8 +258,17 @@ class FilterResourceById(Resource):
     @staticmethod
     @auth.require
     @profiletime
+    @API.doc(
+        responses={200: "OK:- Success", 403: "Permission denied"}, model=filter_response
+    )
+    @API.expect(filter)
     def put(filter_id: int):
-        """Update filter by id."""
+        """
+        Update filter by id.
+
+        Update filter details corresponding to a filter id for requests with ```reviewer permission```.
+        : filter_id:- unique id of filter.
+        """
         try:
             if auth.has_role([REVIEWER_GROUP]):
                 filter_data = filter_schema.load(request.get_json())
@@ -184,8 +312,14 @@ class FilterResourceById(Resource):
     @staticmethod
     @auth.require
     @profiletime
+    @API.doc(responses={200: "OK:- Success", 403: "Permission denied"})
     def delete(filter_id: int):
-        """Delete filter by id."""
+        """
+        Delete filter by id.
+
+        Delete filter corresponding to a filter id for requests with ```reviewer permission```.
+        : filter_id:- unique id of filter.
+        """
         try:
             if auth.has_role([REVIEWER_GROUP]):
                 FilterService.mark_inactive(filter_id=filter_id)
