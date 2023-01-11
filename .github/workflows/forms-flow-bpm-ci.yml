@@ -6,6 +6,7 @@ on:
       - develop
       - master
       - release/**
+      - code-scan-fix
   pull_request:
     branches:
       - develop
