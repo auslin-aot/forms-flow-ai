@@ -16,7 +16,6 @@ from formsflow_api.schemas.form_bundling import SelectedFormSchema
 
 bundle_schema = SelectedFormSchema()
 bundle_mapper_schema = FormBundleProcessMapperSchema()
-mapper_schema = FormProcessMapperSchema()
 
 
 class FormBundleService:  # pylint:disable=too-few-public-methods
@@ -55,6 +54,9 @@ class FormBundleService:  # pylint:disable=too-few-public-methods
                     forms = FormProcessMapper.find_forms_by_active_parent_from_ids(
                         parent_form_ids
                     )
+                mapper_schema = FormProcessMapperSchema(
+                    only=["form_name", "status", "form_id", "form_type"]
+                )
                 bundle_forms = mapper_schema.dump(forms, many=True)
             return bundle_forms
         except AttributeError as err:
@@ -73,6 +75,9 @@ class FormBundleService:  # pylint:disable=too-few-public-methods
             parent_form_ids
         )
         bundle_forms_list = bundle_schema.dump(bundle_forms, many=True)
+        mapper_schema = FormProcessMapperSchema(
+            only=["form_name", "status", "form_id", "parent_form_id", "form_type"]
+        )
         bundle_form_details = mapper_schema.dump(bundle_form_detail, many=True)
         selected_forms = {}
         for form in bundle_form_details + bundle_forms_list:
