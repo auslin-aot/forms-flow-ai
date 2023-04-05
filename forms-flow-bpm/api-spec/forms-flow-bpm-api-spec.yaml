@@ -888,7 +888,6 @@ paths:
             application/json:
               schema:
                 type: object
-                properties: {}
               example: |-
                 {
                 
@@ -906,7 +905,8 @@ paths:
                   }
               examples:
                 example-1:
-                  value: {}
+                  value:
+                    id: test
     parameters: []
     operationId: post-engine-rest-ext-v1-process-definition-key-two-step-approval-listener-start
   /engine-rest-ext/v1/process-definition/key/onestepapproval/start?tenantId=test-tenant:
