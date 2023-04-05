@@ -36,6 +36,19 @@ components:
           items:
             type: string
       description: Tenant authorization model
+    Message:
+      title: Message
+      type: object
+      properties:
+        messageName:
+          type: string
+        processInstanceId:
+          type: string
+        processVariables:
+          type: object
+          x-stoplight:
+            id: kn1qh7xy6l3sa
+      description: Correlates a message to the process engine
 security:
   - bearerAuth: []
 tags:
@@ -1768,3 +1781,22 @@ paths:
                     - formsflow-client
                   reviewerRoles:
                     - formsflow-reviewer
+  /engine-rest-ext/v1/message:
+    post:
+      summary: Submit a message
+      operationId: post-message
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+            examples:
+              example-1:
+              - messageName: application_resubmitted
+                processInstanceId: cae0625d-d1fc-11ed-8972-2c6dc16adb01
+                processVariables:
+                  aVariable:
+                    value: aNewValue
