@@ -83,7 +83,7 @@ class BPMService(BaseBPMService):
             elif endpoint_type == BPMEndpointType.FORM_AUTH_DETAILS:
                 url = f"{bpm_api_base}/engine-rest-ext/v1/admin/form/authorization"
             elif endpoint_type == BPMEndpointType.MESSAGE_EVENT:
-                url = f"{bpm_api_base}/engine-rest-ext/v1/message/"
+                url = f"{bpm_api_base}/engine-rest-ext/v1/message"
             return url
 
         except BaseException:  # pylint: disable=broad-except

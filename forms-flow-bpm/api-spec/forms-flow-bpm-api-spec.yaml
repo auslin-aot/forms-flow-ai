@@ -858,6 +858,57 @@ paths:
                   value:
                     id: test
     parameters: []
+  /engine-rest-ext/v1/process-definition/key/two-step-approval-listener/start:
+    post:
+      summary: Start process
+      tags:
+        - Process
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              variables:
+                applicationId:
+                ' value': 25
+                ' formUrl':
+                  ' value': ' http://localhost:3000/form/626ba203004a95dd15f6b3ad/submission/6273a24051ae2f25bd45793c'
+                ' formName':
+                  ' value': ' Sample form'
+                ' submitterName':
+                  ' value': ' formsflow-reviewer'
+                ' submissionDate':
+                  ' value': ' 2022-05-05 10:09:04.233032'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              example: |-
+                {
+                
+                    links:
+                      - method: GET
+                        href: ' http: //localhost:8000/camunda/engine-rest-ext/v1/process-instance/cae0625d-d1fc-11ed-8972-2c6dc16adb01'
+                        rel: self
+                    id: 648c9e74-cc5b-11ec-8f27-0242ac180003
+                    definitionId: 'two-step-approval-listener:1:374f4f67-c79d-11ec-bea4-0242ac180008'
+                    businessKey: None
+                    caseInstanceId: None
+                    ended: false
+                    suspended: false
+                    tenantId: None
+                  }
+              examples:
+                example-1:
+                  value: {}
+    parameters: []
+    operationId: post-engine-rest-ext-v1-process-definition-key-two-step-approval-listener-start
   /engine-rest-ext/v1/process-definition/key/onestepapproval/start?tenantId=test-tenant:
     post:
       tags:
