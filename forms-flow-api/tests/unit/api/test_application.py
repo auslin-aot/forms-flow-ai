@@ -344,3 +344,11 @@ def test_application_resubmit(app, client, session, jwt):
         f"/application/{application_id}/resubmit", headers=headers, json=payload
     )
     assert rv.status_code == 400
+    token = get_token(jwt, role="formsflow-reviewer")
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "content-type": "application/json",
+    }
+    BPM_API_URL = config._Config.BPM_API_URL + "/engine-rest-ext/v1/task"
+    rv = requests.get(BPM_API_URL, headers=headers, json=payload)
+    assert rv.status_code == 200
