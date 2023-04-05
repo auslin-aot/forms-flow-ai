@@ -858,7 +858,7 @@ paths:
                   value:
                     id: test
     parameters: []
-  /engine-rest-ext/v1/process-definition/key/two-step-approval-listener/start:
+  /engine-rest-ext/v1/process-definition/key/two-step-approval/start:
     post:
       summary: Start process
       tags:
@@ -896,7 +896,7 @@ paths:
                         href: ' http: //localhost:8000/camunda/engine-rest-ext/v1/process-instance/cae0625d-d1fc-11ed-8972-2c6dc16adb01'
                         rel: self
                     id: cae0625d-d1fc-11ed-8972-2c6dc16adb01
-                    definitionId: 'two-step-approval-listener:1:374f4f67-c79d-11ec-bea4-0242ac180008'
+                    definitionId: 'two-step-approval:1:374f4f67-c79d-11ec-bea4-0242ac180008'
                     businessKey: None
                     caseInstanceId: None
                     ended: false
@@ -908,7 +908,7 @@ paths:
                   value:
                     id: test
     parameters: []
-    operationId: post-engine-rest-ext-v1-process-definition-key-two-step-approval-listener-start
+    operationId: post-engine-rest-ext-v1-process-definition-key-two-step-approval-start
   /engine-rest-ext/v1/process-definition/key/onestepapproval/start?tenantId=test-tenant:
     post:
       tags:
@@ -1837,7 +1837,7 @@ paths:
       summary: Submit a message
       operationId: post-message
       responses:
-        '200':
+        '204':
           description: OK
       requestBody:
         content:
@@ -1846,7 +1846,7 @@ paths:
               $ref: '#/components/schemas/Message'
             examples:
               example-1:
-              - messageName: application_resubmitted
+                messageName: application_resubmitted
                 processInstanceId: cae0625d-d1fc-11ed-8972-2c6dc16adb01
                 processVariables:
                   aVariable:

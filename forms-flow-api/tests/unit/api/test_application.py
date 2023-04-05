@@ -1,13 +1,12 @@
 """Test suite for application API endpoint."""
 import pytest
-import requests
+
 from tests.utilities.base_test import (
     get_application_create_payload,
     get_draft_create_payload,
     get_form_request_payload,
     get_token,
 )
-from formsflow_api import config
 
 
 class TestApplicationResource:
@@ -316,8 +315,8 @@ def test_application_resubmit(app, client, session, jwt):
     payload = {
         "formId": "1234",
         "formName": "Sample form",
-        "processKey": "two-step-approval-listener",
-        "processName": "Two Step Approval-listener",
+        "processKey": "two-step-approval",
+        "processName": "Two Step Approval",
         "status": "active",
         "formType": "form",
         "parentFormId": "1234",
@@ -343,12 +342,4 @@ def test_application_resubmit(app, client, session, jwt):
     rv = client.post(
         f"/application/{application_id}/resubmit", headers=headers, json=payload
     )
-    assert rv.status_code == 400
-    token = get_token(jwt, role="formsflow-reviewer")
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "content-type": "application/json",
-    }
-    BPM_API_URL = config._Config.BPM_API_URL + "/engine-rest-ext/v1/task"
-    rv = requests.get(BPM_API_URL, headers=headers, json=payload)
     assert rv.status_code == 200
