@@ -42,6 +42,9 @@ class BaseBPMService:
         )
         data = None
         if response.ok:
+            current_app.logger.debug(
+            "POST URL : %s, response.ok : %s,response.text %s ", url, response.status_code, response.text
+        )
             if response.text:
                 data = json.loads(response.text)
             else:

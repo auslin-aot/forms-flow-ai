@@ -896,7 +896,7 @@ paths:
                       - method: GET
                         href: ' http: //localhost:8000/camunda/engine-rest-ext/v1/process-instance/cae0625d-d1fc-11ed-8972-2c6dc16adb01'
                         rel: self
-                    id: 648c9e74-cc5b-11ec-8f27-0242ac180003
+                    id: cae0625d-d1fc-11ed-8972-2c6dc16adb01
                     definitionId: 'two-step-approval-listener:1:374f4f67-c79d-11ec-bea4-0242ac180008'
                     businessKey: None
                     caseInstanceId: None
