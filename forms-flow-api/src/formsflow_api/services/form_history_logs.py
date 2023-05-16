@@ -34,7 +34,7 @@ class FormHistoryService:
             formio_service = FormioService()
             form_io_token = formio_service.get_formio_access_token()
             response = formio_service.create_form(data, form_io_token)
-            user_name = (user.user_name,)
+            user_name = user.user_name
             form_history_data = {
                 "form_id": form_id,
                 "parent_form_id": parent_form_id or form_id,
@@ -56,7 +56,7 @@ class FormHistoryService:
         """Create form history."""
         user: UserContext = kwargs["user"]
         assert data is not None
-        user_name = (user.user_name,)
+        user_name = user.user_name
         form_logs_data = {"change_log": {}}
         if data.get("statusChanged") is True:
             form_logs_data["status"] = True

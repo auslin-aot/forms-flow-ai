@@ -38,7 +38,7 @@ class Authorization(AuditDateTimeMixin, AuditUserMixin, BaseModel, db.Model):
         db.String, nullable=False, index=True, comment="Resource identifier"
     )
     resource_details = db.Column(JSON, nullable=True, comment="Resource details")
-    roles = db.Column(ARRAY(db.String), nullable=True, comment="Applicable roles")
+    roles = db.Column(JSON(db.String), nullable=True, comment="Applicable roles")
     user_name = db.Column(db.String, nullable=True, comment="Applicable user")
 
     @classmethod

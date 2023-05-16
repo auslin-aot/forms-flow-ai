@@ -22,10 +22,10 @@ class Filter(AuditDateTimeMixin, AuditUserMixin, BaseModel, db.Model):
     description = db.Column(db.String, nullable=True)
     resource_id = db.Column(db.String, nullable=True)
     criteria = db.Column(JSON, nullable=True)
-    variables = db.Column(ARRAY(JSON), nullable=True)
+    variables = db.Column(JSON(JSON), nullable=True)
     properties = db.Column(JSON, nullable=True)
-    roles = db.Column(ARRAY(db.String), nullable=True, comment="Applicable roles")
-    users = db.Column(ARRAY(db.String), nullable=True, comment="Applicable users")
+    roles = db.Column(JSON(db.String), nullable=True, comment="Applicable roles")
+    users = db.Column(JSON(db.String), nullable=True, comment="Applicable users")
     status = db.Column(db.String(10), nullable=True)
 
     @classmethod

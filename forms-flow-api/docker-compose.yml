@@ -2,18 +2,19 @@ version: '3.7'
 
 services:
   forms-flow-webapi-db:
-    image: postgres:11
+    image: mariadb
     environment:
-      POSTGRES_USER: ${FORMSFLOW_API_DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${FORMSFLOW_API_DB_PASSWORD:-changeme}
-      POSTGRES_DB: ${FORMSFLOW_API_DB_NAME:-webapi}
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: ${FORMSFLOW_API_DB_NAME:-webapi-db}
+      MARIADB_USER: ${FORMSFLOW_API_DB_USER:-root}
+      MARIADB_PASSWORD: ${FORMSFLOW_API_DB_PASSWORD:-root}
     ports:
-      - '6432:5432'
+      - '3306:3306'
     restart: unless-stopped
-    volumes:
-      - ./postgres/webapi:/var/lib/postgresql/data
     networks:
       - forms-flow-webapi-network
+    volumes:
+      - ./postgres/webapi:/var/lib/postgresql/data
 
   forms-flow-webapi:
     build:
@@ -22,7 +23,7 @@ services:
     restart: unless-stopped
     depends_on:
       - forms-flow-webapi-db
-    entrypoint: "/wait-for-service.sh forms-flow-webapi-db:5432 -s -- ./entrypoint.sh"
+    entrypoint: "/wait-for-service.sh forms-flow-webapi-db:3306 -s -- ./entrypoint.sh"
     ports:
       - '5000:5000'
     volumes:
@@ -30,7 +31,7 @@ services:
     environment:
       INSIGHT_API_KEY: ${INSIGHT_API_KEY}
       INSIGHT_API_URL: ${INSIGHT_API_URL}
-      DATABASE_URL: ${FORMSFLOW_API_DB_URL:-postgresql://postgres:changeme@forms-flow-webapi-db:5432/webapi}
+      DATABASE_URL: ${FORMSFLOW_API_DB_URL:-mysql+mysqlconnector://root:root@forms-flow-webapi-db:3306/webapi-db}
       BPM_TOKEN_API: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_URL_REALM:-forms-flow-ai}/protocol/openid-connect/token
       BPM_CLIENT_ID: ${KEYCLOAK_BPM_CLIENT_ID:-forms-flow-bpm}
       BPM_CLIENT_SECRET: ${KEYCLOAK_BPM_CLIENT_SECRET:-e4bdbd25-1467-4f7f-b993-bc4b1944c943}
