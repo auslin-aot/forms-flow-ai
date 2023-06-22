@@ -285,24 +285,19 @@ class Application(
         return pagination.items, total_count
 
     @classmethod
-    def find_applications_by_auth_form_ids(  # pylint: disable=too-many-arguments
+    def find_applications_by_process_key(  # pylint: disable=too-many-arguments
         cls,
         page_no: int,
         limit: int,
         order_by: str,
         sort_order: str,
-        form_ids: str,
+        process_key: str,
         **filters,
     ):
         """Fetch applications list based on searching parameters for Reviewer."""
         query = cls.filter_conditions(**filters)
         query = FormProcessMapper.tenant_authorization(query=query)
-        filtered_form_query = FormProcessMapper.get_latest_form_mapper_ids()
-        filtered_form_ids = [
-            data.id for data in filtered_form_query if data.parent_form_id in form_ids
-        ]
-
-        query = query.filter(FormProcessMapper.id.in_(filtered_form_ids))
+        query = query.filter(FormProcessMapper.process_key.in_(process_key))
         query = cls.filter_draft_applications(query=query)
         order_by, sort_order = validate_sort_order_and_order_by(order_by, sort_order)
         if order_by and sort_order:
