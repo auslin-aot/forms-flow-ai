@@ -492,7 +492,9 @@ class ApplicationService:  # pylint: disable=too-many-public-methods
             task_keys = [val["key"] for val in task_variable]
             process_variables.update(
                 {
-                    key: {"value": form_data[key]}
+                    key: {"value": json.dumps(form_data[key])}
+                    if isinstance(form_data[key], (dict, list))
+                    else {"value": form_data[key]}
                     for key in task_keys
                     if key in form_data
                 }
