@@ -39,3 +39,27 @@ class CustomTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
             with gzip.open(dest_in_archive, "wb") as f_out:
                 shutil.copyfileobj(f_in, f_out)
         os.remove(source)
+    
+    def getFilesToDelete(self):
+        """Override the getFilesToDelete method.
+
+        Determine the files to delete when rollover occurs.
+        Returns a list of file names to delete.
+        """
+        dir_name, base_name = os.path.split(self.baseFilename)
+        dir_name = os.path.join(dir_name, "archive")
+        file_names = os.listdir(dir_name)
+        result = []
+        prefix = base_name + "."
+        plen = len(prefix)
+        for filename in file_names:
+            if filename[:plen] == prefix:
+                suffix = filename[plen:]
+                if self.extMatch.match(suffix):
+                    result.append(os.path.join(dir_name, filename))        
+        if len(result) < self.backupCount:
+            result = []
+        else:
+            result.sort()
+            result = result[:len(result) - self.backupCount]
+        return result
