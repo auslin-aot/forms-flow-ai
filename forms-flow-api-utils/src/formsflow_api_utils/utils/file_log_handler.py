@@ -5,7 +5,7 @@ import logging.handlers
 import os
 import shutil
 
-from format import CustomFormatter
+from .format import CustomFormatter
 
 
 class CustomTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
