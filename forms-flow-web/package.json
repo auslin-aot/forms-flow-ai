@@ -55,7 +55,7 @@
     "connected-react-router": "^6.9.1",
     "craco-plugin-single-spa-app-aot": "^2.0.2",
     "create-react-class": "^15.7.0",
-    "crypto-js": "^4.0.0",
+    "crypto-js": "^4.2.0",
     "dmn-js": "^12.3.0",
     "dmn-js-properties-panel": "^1.1.0",
     "dompurify": "^3.0.6",
