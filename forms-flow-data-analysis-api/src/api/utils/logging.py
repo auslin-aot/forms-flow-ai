@@ -17,6 +17,7 @@ def setup_logging(conf):
         )
     return logging.getLogger(__name__)
 
+
 def log_error(msg):
     """Log error."""
     logging.error(msg)
