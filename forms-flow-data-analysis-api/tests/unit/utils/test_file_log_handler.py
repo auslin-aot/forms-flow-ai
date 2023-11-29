@@ -19,7 +19,6 @@ def test_file_log_valid_data(app):
     with open(log_file_path, "r") as log_file:
         log_contents = log_file.read()
         assert "Test log.." in log_contents
-        log_file.close()
 
 
 def test_file_log_with_missing_file(app, capsys):
