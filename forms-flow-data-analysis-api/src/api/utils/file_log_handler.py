@@ -74,6 +74,6 @@ def register_log_handlers(app, log_file, when, interval, backup_count):
             log_file, when, interval, backup_count
         )
         app.logger.handlers = [logs, file_handler]
-    except Exception as err:
+    except Exception as err:  # pylint: disable=broad-except
         app.logger.warning(f"Unable to configure file logging..{err}")
         print("Unable to configure file logging..")
