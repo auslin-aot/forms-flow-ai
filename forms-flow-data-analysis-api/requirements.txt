@@ -64,3 +64,6 @@ transformers==4.33.2
 typing_extensions==4.8.0
 urllib3==2.0.7
 wasabi==0.10.1
+pyOpenSSL==23.2.0
+PyJWT==2.8.0
+formsflow-api-utils @ git+https://github.com/AOT-Technologies/forms-flow-ai.git@master#subdirectory=forms-flow-api-utils
