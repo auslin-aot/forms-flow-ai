@@ -87,6 +87,9 @@ class _Config:  # pylint: disable=too-few-public-methods
     # Configure LOG
     CONFIGURE_LOGS = str(os.getenv("CONFIGURE_LOGS", default="true")).lower() == "true"
 
+    # REDIS CONFIG
+    REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
+
 
 class DevConfig(_Config):  # pylint: disable=too-few-public-methods
     """Development environment configuration."""

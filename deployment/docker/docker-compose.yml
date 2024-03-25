@@ -259,6 +259,8 @@ services:
       context: ./../../forms-flow-documents/
       dockerfile: Dockerfile
     restart: always
+    depends_on:
+      - redis
     ports:
       - '5006:5006'
     volumes:
