@@ -11,6 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from seleniumwire import webdriver
+from .user_context import _get_token_info
 
 
 def send_devtools(driver, cmd, params=None):
@@ -63,6 +64,33 @@ def get_pdf_from_html(path, chromedriver=None, p_options=None, args=None):
         driver.execute_cdp_cmd("Emulation.setTimezoneOverride", tz_params)
 
     driver.get(path)
+
+    # Set user details to local storage
+    token_info = _get_token_info()
+    user_details = {
+        "sub": token_info.get("sub", None),
+        "email_verified": token_info.get("email_verified", False),
+        "role": token_info.get("roles", None) or token_info.get(
+            "role", None
+        ),
+        "name": token_info.get("name", None),
+        "groups": token_info.get("groups", None),
+        "preferred_username": token_info.get("preferred_username", None),
+        "given_name": token_info.get("given_name", None),
+        "family_name": token_info.get("family_name", None),
+        "email": token_info.get("email", None),
+        "tenantKey": token_info.get("tenantKey", None),
+    }
+    
+    # Convert the user details object to a JSON string
+    user_details_json = json.dumps(user_details)
+
+    # Set the local storage key and value
+    driver.execute_script(f"window.localStorage.setItem('UserDetails', '{user_details_json}')")
+
+    # Verify the local storage key and value
+    local_storage = driver.execute_script("return window.localStorage")
+    print(local_storage)
 
     try:
         if "wait" in args:
