@@ -87,7 +87,7 @@
     "react-quill": "^2.0.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "^5.0.0",
     "react-select": "^3.2.0",
     "react-toastify": "^7.0.4",
     "recharts": "^1.8.5",
@@ -101,7 +101,7 @@
     "sockjs-client": "^1.5.1",
     "source-map-explorer": "^2.5.2",
     "stompjs": "^2.3.3",
-    "ws": "^7.4.6"
+    "ws": "^8.17.1"
   },
   "resolutions": {
     "browserslist": "^4.17.6",
