@@ -18,3 +18,4 @@ selenium
 selenium-wire
 nested-lookup
 git+https://github.com/AOT-Technologies/forms-flow-ai.git@ignore-logs-dev#egg=formsflow_api_utils&subdirectory=forms-flow-api-utils
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
