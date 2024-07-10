@@ -70,3 +70,4 @@ urllib3==2.2.1
 wsproto==1.2.0
 zstandard==0.22.0
 setuptools==69.0.2
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
