@@ -22,6 +22,7 @@ class FormHistoryService:
         user: UserContext = kwargs["user"]
         assert data is not None
         if data.get("componentChanged") is True:
+            print("Creating clone")
             form_id = data.get("_id")
             parent_form_id = data.get("parentFormId")
             # Delete id and machineName form form data
@@ -62,7 +63,17 @@ class FormHistoryService:
                 "major_version": major_version,
                 "minor_version": minor_version,
             }
+            print("form_history_data", form_history_data)
             create_form_history = FormHistory.create_history(form_history_data)
+            print(create_form_history,"create_form_history")
+            print(create_form_history.major_version,"major_version")
+            print(create_form_history.minor_version,"minor_version")
+            print(create_form_history.created_by,"created_by")
+            print(create_form_history.created,"component_change")
+            print(create_form_history.change_log,"workflow")
+            print(create_form_history.form_id,"form_id")
+
+            print("after save...")
             return version_data_schema.dump(create_form_history)
         return None
 

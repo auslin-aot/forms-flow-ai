@@ -22,6 +22,8 @@ class FormHistorySchema(Schema):
 
     def get_combined_version(self, obj):
         """Combine major and minor versions."""
+        print("combine...")
         major_version = obj.major_version or 1
         minor_version = obj.minor_version or 0
+        print(f"{major_version}.{minor_version}","major-minor")
         return f"{major_version}.{minor_version}"
