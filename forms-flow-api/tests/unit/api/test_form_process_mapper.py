@@ -525,3 +525,26 @@ def test_export(app, client, session, jwt, mock_redis_client):
     # assert len(response.json["workflows"]) == 3
     # assert len(response.json["rules"]) == 0
     # assert len(response.json["authorizations"]) == 1
+
+
+def test_form_history(app, client, session, jwt, mock_redis_client):
+    """Testing form history."""
+    token = get_token(jwt, role=CREATE_DESIGNS, username="designer")
+    headers = {"Authorization": f"Bearer {token}", "content-type": "application/json"}
+    payload = get_formio_form_request_payload()
+    payload["componentChanged"] = True
+    payload["newVersion"] = True
+    response = client.post(
+        "/form/form-design", headers=headers, json=payload
+    )
+    assert response.status_code == 201
+    form_id = response.json["_id"]
+    response = client.get(f"/form/form-history/{form_id}", headers=headers)
+    assert response.status_code == 200
+    assert response.json is not None
+    assert len(response.json) == 1
+    assert response.json[0]["majorVersion"] == 1
+    assert response.json[0]["minorVersion"] == 0
+    assert response.json[0]["formId"] == form_id
+    assert response.json[0]["version"] == "1.0"
+
