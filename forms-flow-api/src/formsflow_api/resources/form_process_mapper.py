@@ -619,17 +619,24 @@ class FormioFormUpdateResource(Resource):
     def put(form_id: str):
         """Formio form update method."""
         try:
+            print("here input update")
             FormProcessMapperService.check_tenant_authorization_by_formid(
                 form_id=form_id
             )
+            print("here input update1")
             data = request.get_json()
             formio_service = FormioService()
             form_io_token = formio_service.get_formio_access_token()
+            print("here input update3")
+            print(form_id, form_io_token,"herrr")
+            print(data,"here")
             response, status = (
                 formio_service.update_form(form_id, data, form_io_token),
                 HTTPStatus.OK,
             )
+            print("here...")
             FormHistoryService.create_form_log_with_clone(data=data)
+            print("after clone...")
             return response, status
         except BusinessException as err:
             message = (

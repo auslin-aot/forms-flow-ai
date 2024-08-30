@@ -22,6 +22,7 @@ class FormHistoryService:
         user: UserContext = kwargs["user"]
         assert data is not None
         if data.get("componentChanged") is True:
+            print("Creating clone")
             form_id = data.get("_id")
             parent_form_id = data.get("parentFormId")
             # Delete id and machineName form form data
@@ -39,18 +40,16 @@ class FormHistoryService:
             response = formio_service.create_form(data, form_io_token)
             # Version details is used set version number
             version_data_schema = FormHistorySchema()
+            version_data = FormHistory.get_latest_version(parent_form_id)
+            major_version, minor_version = 0, 0
+            if version_data:
+                major_version = version_data.major_version
+                minor_version = version_data.minor_version
             if data.get("newVersion") is True:
-                version_number = "v" + str(
-                    FormHistory.get_version_count(parent_form_id) + 1
-                )
+                major_version += 1
+                minor_version = 0
             else:
-                version_data = version_data_schema.dump(
-                    FormHistory.get_latest_version(parent_form_id)
-                )
-                version_number = (
-                    version_data.get("changeLog")
-                    and version_data.get("changeLog").get("version")
-                ) or None
+                minor_version += 1
             # Form history data to save into form history table
             form_history_data = {
                 "form_id": form_id,
@@ -60,10 +59,21 @@ class FormHistoryService:
                 "change_log": {
                     "cloned_form_id": response.get("_id"),
                     "new_version": data.get("newVersion") or False,
-                    "version": version_number,
                 },
+                "major_version": major_version,
+                "minor_version": minor_version,
             }
+            print("form_history_data", form_history_data)
             create_form_history = FormHistory.create_history(form_history_data)
+            print(create_form_history,"create_form_history")
+            print(create_form_history.major_version,"major_version")
+            print(create_form_history.minor_version,"minor_version")
+            print(create_form_history.created_by,"created_by")
+            print(create_form_history.created,"component_change")
+            print(create_form_history.change_log,"workflow")
+            print(create_form_history.form_id,"form_id")
+
+            print("after save...")
             return version_data_schema.dump(create_form_history)
         return None
 
@@ -94,6 +104,11 @@ class FormHistoryService:
             form_logs_data["created_by"] = user_name
             form_logs_data["form_id"] = data.get("formId")
             form_logs_data["parent_form_id"] = data.get("parentFormId")
+            # Capture version details in form history
+            version_data = FormHistory.get_latest_version(data.get("parentFormId"))
+            if version_data:
+                form_logs_data["major_version"] = version_data.major_version
+                form_logs_data["minor_version"] = version_data.minor_version
             history_schema = FormHistorySchema()
             create_form_history = FormHistory.create_history(form_logs_data)
             return history_schema.dump(create_form_history)
