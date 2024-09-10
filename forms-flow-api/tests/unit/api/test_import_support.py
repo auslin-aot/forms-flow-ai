@@ -2,6 +2,7 @@
 
 import json
 import io
+from random import randrange
 from werkzeug.datastructures import FileStorage
 from formsflow_api_utils.utils import CREATE_DESIGNS
 from unittest.mock import patch
@@ -10,19 +11,19 @@ from formsflow_api.services import ImportService
 
 
 
-def form_workflow_json_data():
+def form_workflow_json_data(name="testform"):
     """Form workflow json."""
     return {
         "forms": [
             {
-                "formTitle": "testform123888",
+                "formTitle": name,
                 "formDescription": "",
-                "anonymous": "false",
+                "anonymous": False,
                 "type": "main",
                 "content": {
-                    "title": "testform123888",
-                    "name": "testform123888",
-                    "path": "testform123888",
+                    "title": name,
+                    "name": name,
+                    "path": name,
                     "type": "form",
                     "display": "form",
                     "tags": ["common"],
@@ -409,55 +410,61 @@ def test_import_new(app, client, session, jwt, mock_redis_client):
     }
  
     # Test case 1: Import new form+workflow - validate form
-    with patch.object(ImportService, "import_form_workflow") as mock_import_service:
-        mock_response = {"form": {"majorVersion": 1, "minorVersion": 0}, "workflow": {"majorVersion": 1, "minorVersion": 0}}
-        mock_import_service.return_value = mock_response
+    name =  f"test{randrange(1000)}"
+    form_content = json.dumps(form_workflow_json_data(name=name))
+    file = create_file(form_content)
 
-        # Prepare the file content
-        form_content = json.dumps(form_workflow_json_data())
-        file = create_file(form_content)
+    form_data = {
+        "file": file,
+        "data": json.dumps(
+            {
+                "importType": "new",
+                "action": "validate",
+            }
+        ),
+    }
 
-        form_data = {
-            "file": file,
-            "data": json.dumps(
-                {
-                    "importType": "new",
-                    "action": "validate",
-                }
-            ),
-        }
-
-        # Send the POST request with form-data
-        response = client.post("/import", data=form_data, headers=headers)
-        # Assertions to validate the response
-        assert response.status_code == 200
-        assert response.json is not None
-        print(response.json, "response..")
-        assert response.json == {"form": {"majorVersion": 1, "minorVersion": 0}, "workflow": {"majorVersion": 1, "minorVersion": 0}}
+    # Send the POST request with form-data
+    response = client.post("/import", data=form_data, headers=headers)
+    # Assertions to validate the response
+    assert response.status_code == 200
+    assert response.json is not None
+    assert response.json == {"form": {"majorVersion": 1, "minorVersion": 0}, "workflow": {"majorVersion": 1, "minorVersion": 0}}
 
     # Test case 2: Import new form+workflow - import
-    with patch.object(ImportService, "import_form_workflow") as mock_import_service:
-        mock_response = {"message": "Imported successfully."}
-        mock_import_service.return_value = mock_response
+    form_content = json.dumps(form_workflow_json_data(name=name))
+    file = create_file(form_content)
 
-        # Prepare the file content
-        form_content = json.dumps(form_workflow_json_data())
-        file = create_file(form_content)
+    form_data = {
+        "file": file,
+        "data": json.dumps(
+            {
+                "importType": "new",
+                "action": "import",
+            }
+        ),
+    }
+    response = client.post("/import", data=form_data, headers=headers)
+    assert response.status_code == 200
+    assert response.json is not None
+    assert response.json == {"message": "Imported successfully."}
 
-        form_data = {
-            "file": file,
-            "data": json.dumps(
-                {
-                    "importType": "new",
-                    "action": "import",
-                }
-            ),
-        }
-        response = client.post("/import", data=form_data, headers=headers)
-        assert response.status_code == 200
-        assert response.json is not None
-        print(response.json, "response..")
-        assert response.json == {"message": "Imported successfully."}
+    # Test case 3: Import with existing form
+    form_content = json.dumps(form_workflow_json_data(name=name))
+    file = create_file(form_content)
+
+    form_data = {
+        "file": file,
+        "data": json.dumps(
+            {
+                "importType": "new",
+                "action": "import",
+            }
+        ),
+    }
+    response = client.post("/import", data=form_data, headers=headers)
+    assert response.status_code == 400
+    assert response.json == {'message': 'Form validation failed: The Name or Path already exists. They must be unique.', 'code': 'FORM_EXISTS', 'details': []} 
 
     # Test case 3: Import with invalid json.
     form_content = json.dumps(form_json_data())
@@ -474,19 +481,19 @@ def test_import_new(app, client, session, jwt, mock_redis_client):
     }
     response = client.post("/import", data=form_data, headers=headers)
     assert response.status_code == 400
-    print(response.json, "response..")
     assert response.json == {'message': 'File format not supported', 'code': 'INVALID_FILE_TYPE', 'details': []}
 
 def test_import_edit(app, client, session, jwt, mock_redis_client):
-    """Testing import edit."""
+    """Testing import edit form+workflow."""
 
     token = get_token(jwt, role=CREATE_DESIGNS, username="designer")
     headers = {
         "Authorization": f"Bearer {token}",
         "content-type": "multipart/form-data",
     }
-
-    form_content = json.dumps(form_workflow_json_data())
+ 
+    name =  f"test{randrange(1000)}"
+    form_content = json.dumps(form_workflow_json_data(name=name))
     file = create_file(form_content)
 
     form_data = {
@@ -499,5 +506,28 @@ def test_import_edit(app, client, session, jwt, mock_redis_client):
         ),
     }
     response = client.post("/import", data=form_data, headers=headers)
+    assert response.status_code == 200
+    assert response.json is not None
+    assert response.json == {"message": "Imported successfully."}
+
+    #Import edit form+workflow - validate
+    form_content = json.dumps(form_workflow_json_data(name=name))
+    file = create_file(form_content)
+
+    form_data = {
+        "file": file,
+        "data": json.dumps(
+            {
+                "importType": "edit",
+                "action": "validate",
+                "mapperId":"1",
+                "form": {"skip": "false","selectedVersion":"major"},
+                "workflow": {"skip": "true","selectedVersion": "minor"}
+            }
+        ),
+    }
+    response = client.post("/import", data=form_data, headers=headers)
     print(response.json, "response..")
-    assert response.status_code == 400
+    assert response.status_code == 200
+    assert response.json is not None
+    
