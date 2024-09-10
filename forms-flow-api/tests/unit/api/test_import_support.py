@@ -4,22 +4,25 @@ import json
 import io
 from werkzeug.datastructures import FileStorage
 from formsflow_api_utils.utils import CREATE_DESIGNS
-from tests.utilities.base_test import get_token
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+from tests.utilities.base_test import get_token, get_formio_form_request_payload
+from formsflow_api.services import ImportService
 
-def form_workflow_data():
+
+
+def form_workflow_json_data():
     """Form workflow json."""
     return {
         "forms": [
             {
-                "formTitle": "testform156",
+                "formTitle": "testform123888",
                 "formDescription": "",
                 "anonymous": "false",
                 "type": "main",
                 "content": {
-                    "title": "testform156",
-                    "name": "testform156",
-                    "path": "testform156",
+                    "title": "testform123888",
+                    "name": "testform123888",
+                    "path": "testform123888",
                     "type": "form",
                     "display": "form",
                     "tags": ["common"],
@@ -377,6 +380,16 @@ def form_workflow_data():
     }
 
 
+def form_json_data():
+    """Form json data."""
+    """Form json data format
+     {"forms":[{"title":"test form1","display":"form", <rest form components..>}]
+    """
+    form_data = get_formio_form_request_payload()
+    return {
+        "forms":[form_data]
+    }
+
 def create_file(form_content):
     """Create a file-like object."""
     return FileStorage(
@@ -386,25 +399,24 @@ def create_file(form_content):
     )
 
 
-def test_import(app, client, session, jwt, mock_redis_client):
-    """Testing import."""
+def test_import_new(app, client, session, jwt, mock_redis_client):
+    """Testing import new form+workflow."""
 
     token = get_token(jwt, role=CREATE_DESIGNS, username="designer")
     headers = {
         "Authorization": f"Bearer {token}",
+        "content-type": "multipart/form-data",
     }
+ 
+    # Test case 1: Import new form+workflow - validate form
+    with patch.object(ImportService, "import_form_workflow") as mock_import_service:
+        mock_response = {"form": {"majorVersion": 1, "minorVersion": 0}, "workflow": {"majorVersion": 1, "minorVersion": 0}}
+        mock_import_service.return_value = mock_response
 
-    with patch("requests.post") as mock_post:
-        # Create a mock response object
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.text = '{"form":{"majorVersion": 1,"minorVersion": 0}, "workflow":{"majorVersion": 3,"minorVersion": 4}}'
-        mock_post.return_value = mock_response
         # Prepare the file content
-        form_content = json.dumps(form_workflow_data())
+        form_content = json.dumps(form_workflow_json_data())
         file = create_file(form_content)
 
-        # input form-data
         form_data = {
             "file": file,
             "data": json.dumps(
@@ -417,13 +429,75 @@ def test_import(app, client, session, jwt, mock_redis_client):
 
         # Send the POST request with form-data
         response = client.post("/import", data=form_data, headers=headers)
-
         # Assertions to validate the response
         assert response.status_code == 200
         assert response.json is not None
-        assert len(response.json["form"]) is not None
-        assert response.json["form"]["majorVersion"] == 1
-        assert response.json["form"]["minorVersion"] == 0
-        assert len(response.json["workflow"]) is not None
-        assert response.json["workflow"]["majorVersion"] == 1
-        assert response.json["workflow"]["minorVersion"] == 0
+        print(response.json, "response..")
+        assert response.json == {"form": {"majorVersion": 1, "minorVersion": 0}, "workflow": {"majorVersion": 1, "minorVersion": 0}}
+
+    # Test case 2: Import new form+workflow - import
+    with patch.object(ImportService, "import_form_workflow") as mock_import_service:
+        mock_response = {"message": "Imported successfully."}
+        mock_import_service.return_value = mock_response
+
+        # Prepare the file content
+        form_content = json.dumps(form_workflow_json_data())
+        file = create_file(form_content)
+
+        form_data = {
+            "file": file,
+            "data": json.dumps(
+                {
+                    "importType": "new",
+                    "action": "import",
+                }
+            ),
+        }
+        response = client.post("/import", data=form_data, headers=headers)
+        assert response.status_code == 200
+        assert response.json is not None
+        print(response.json, "response..")
+        assert response.json == {"message": "Imported successfully."}
+
+    # Test case 3: Import with invalid json.
+    form_content = json.dumps(form_json_data())
+    file = create_file(form_content)
+
+    form_data = {
+        "file": file,
+        "data": json.dumps(
+            {
+                "importType": "new",
+                "action": "import",
+            }
+        ),
+    }
+    response = client.post("/import", data=form_data, headers=headers)
+    assert response.status_code == 400
+    print(response.json, "response..")
+    assert response.json == {'message': 'File format not supported', 'code': 'INVALID_FILE_TYPE', 'details': []}
+
+def test_import_edit(app, client, session, jwt, mock_redis_client):
+    """Testing import edit."""
+
+    token = get_token(jwt, role=CREATE_DESIGNS, username="designer")
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "content-type": "multipart/form-data",
+    }
+
+    form_content = json.dumps(form_workflow_json_data())
+    file = create_file(form_content)
+
+    form_data = {
+        "file": file,
+        "data": json.dumps(
+            {
+                "importType": "new",
+                "action": "import",
+            }
+        ),
+    }
+    response = client.post("/import", data=form_data, headers=headers)
+    print(response.json, "response..")
+    assert response.status_code == 400
