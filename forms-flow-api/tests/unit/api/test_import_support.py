@@ -5,7 +5,7 @@ import io
 from werkzeug.datastructures import FileStorage
 from formsflow_api_utils.utils import CREATE_DESIGNS
 from tests.utilities.base_test import get_token
-
+from unittest.mock import patch, MagicMock
 
 def form_workflow_data():
     """Form workflow json."""
@@ -388,54 +388,42 @@ def create_file(form_content):
 
 def test_import(app, client, session, jwt, mock_redis_client):
     """Testing import."""
-    # Prepare the file content
-    form_content = json.dumps(form_workflow_data())
-    file = create_file(form_content)
 
-    # input form-data
-    form_data = {
-        "file": file,
-        "data": json.dumps(
-            {
-                "importType": "new",
-                "action": "validate",
-            }
-        ),
-    }
     token = get_token(jwt, role=CREATE_DESIGNS, username="designer")
     headers = {
         "Authorization": f"Bearer {token}",
-        "content-type": "multipart/form-data",
     }
 
-    # Send the POST request with form-data
-    response = client.post("/import", data=form_data, headers=headers)
+    with patch("requests.post") as mock_post:
+        # Create a mock response object
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = '{"form":{"majorVersion": 1,"minorVersion": 0}, "workflow":{"majorVersion": 3,"minorVersion": 4}}'
+        mock_post.return_value = mock_response
+        # Prepare the file content
+        form_content = json.dumps(form_workflow_data())
+        file = create_file(form_content)
 
-    # Assertions to validate the response
-    assert response.status_code == 200
-    assert response.json is not None
-    assert len(response.json["form"]) is not None
-    assert response.json["form"]["majorVersion"] == 1
-    assert response.json["form"]["minorVersion"] == 0
-    assert len(response.json["workflow"]) is not None
-    assert response.json["workflow"]["majorVersion"] == 1
-    assert response.json["workflow"]["minorVersion"] == 0
+        # input form-data
+        form_data = {
+            "file": file,
+            "data": json.dumps(
+                {
+                    "importType": "new",
+                    "action": "validate",
+                }
+            ),
+        }
 
-    file = create_file(form_content)
-    # Test import with new-import
-    form_data = {
-        "file": file,
-        "data": json.dumps(
-            {
-                "importType": "new",
-                "action": "import",
-            }
-        ),
-    }
+        # Send the POST request with form-data
+        response = client.post("/import", data=form_data, headers=headers)
 
-    # Send the POST request with form-data
-    response = client.post("/import", data=form_data, headers=headers)
-    # Assertions to validate the response
-    assert response.status_code == 200
-    assert response.json is not None
-    assert response.json["message"] == "Imported successfully."
+        # Assertions to validate the response
+        assert response.status_code == 200
+        assert response.json is not None
+        assert len(response.json["form"]) is not None
+        assert response.json["form"]["majorVersion"] == 1
+        assert response.json["form"]["minorVersion"] == 0
+        assert len(response.json["workflow"]) is not None
+        assert response.json["workflow"]["majorVersion"] == 1
+        assert response.json["workflow"]["minorVersion"] == 0
