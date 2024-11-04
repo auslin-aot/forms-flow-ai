@@ -568,3 +568,44 @@ class GetProcessByProcessKey:
             headers=headers,
         )
         assert response.status_code == 400
+
+
+class MigrateProcess:
+    """Test suite for the migrate process."""
+
+    def migrate_process_success(self, app, client, session, jwt, create_mapper_custom):
+        """Migrate process with success."""
+        payload = {
+            "formId": "1234",
+            "formName": "Sample form1",
+            "processKey": "onestepapproval",
+            "processName": "One Step Approval",
+            "status": "inactive",
+            "formType": "form",
+            "parentFormId": "1234",
+            "is_migrated": False,
+        }
+        rv = create_mapper_custom(payload)
+        mapper_id = rv["id"]
+        payload = {
+            "formId": "12345",
+            "formName": "Sample form2",
+            "processKey": "onestepapproval",
+            "processName": "One Step Approval",
+            "status": "inactive",
+            "formType": "form",
+            "parentFormId": "12345",
+            "is_migrated": False,
+        }
+        rv = create_mapper_custom(payload)
+        token = get_token(jwt, role=CREATE_DESIGNS, username="designer")
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "content-type": "application/json",
+        }
+        rv = client.post(
+            "/process/migrate",
+            headers=headers,
+            json={"mapperId": mapper_id, "processKey": "onestepapproval"},
+        )
+        assert rv.status_code == 200
