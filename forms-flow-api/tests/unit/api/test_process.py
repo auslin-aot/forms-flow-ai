@@ -15,6 +15,20 @@ from tests.utilities.base_test import (
 )
 
 
+def mapper_payload(form_id, form_name):
+    """Mapper payload."""
+    return {
+        "formId": form_id,
+        "formName": form_name,
+        "processKey": "onestepapproval",
+        "processName": "One Step Approval",
+        "status": "inactive",
+        "formType": "form",
+        "parentFormId": form_id,
+        "is_migrated": False,
+    }
+
+
 def ensure_process_data_binary(process_id):
     """Convert process_data to binary if string."""
     process = Process.query.get(process_id)
@@ -575,29 +589,11 @@ class MigrateProcess:
 
     def migrate_process_success(self, app, client, session, jwt, create_mapper_custom):
         """Migrate process with success."""
-        payload = {
-            "formId": "1234",
-            "formName": "Sample form1",
-            "processKey": "onestepapproval",
-            "processName": "One Step Approval",
-            "status": "inactive",
-            "formType": "form",
-            "parentFormId": "1234",
-            "is_migrated": False,
-        }
-        rv = create_mapper_custom(payload)
+        rv = create_mapper_custom(
+            mapper_payload(form_id="1234", form_name="Sample form1")
+        )
         mapper_id = rv["id"]
-        payload = {
-            "formId": "12345",
-            "formName": "Sample form2",
-            "processKey": "onestepapproval",
-            "processName": "One Step Approval",
-            "status": "inactive",
-            "formType": "form",
-            "parentFormId": "12345",
-            "is_migrated": False,
-        }
-        rv = create_mapper_custom(payload)
+        create_mapper_custom(mapper_payload(form_id="12345", form_name="Sample form2"))
         token = get_token(jwt, role=CREATE_DESIGNS, username="designer")
         headers = {
             "Authorization": f"Bearer {token}",
@@ -609,3 +605,45 @@ class MigrateProcess:
             json={"mapperId": mapper_id, "processKey": "onestepapproval"},
         )
         assert rv.status_code == 200
+
+    def migrate_process_unauthorized(
+        self, app, client, session, jwt, create_mapper_custom
+    ):
+        """Migrate process without proper authorization."""
+        rv = create_mapper_custom(
+            mapper_payload(form_id="1234", form_name="Sample form1")
+        )
+        mapper_id = rv["id"]
+        create_mapper_custom(mapper_payload(form_id="12345", form_name="Sample form2"))
+        rv = client.post(
+            "/process/migrate",
+            json={"mapperId": mapper_id, "processKey": "onestepapproval"},
+        )
+        assert rv.status_code == 401
+
+    def migrate_process_invalid(self, app, client, session, jwt, create_mapper_custom):
+        """Migrate process with invalid data."""
+        rv = create_mapper_custom(
+            mapper_payload(form_id="1234", form_name="Sample form1")
+        )
+        mapper_id = rv["id"]
+        create_mapper_custom(mapper_payload(form_id="12345", form_name="Sample form2"))
+        token = get_token(jwt, role=CREATE_DESIGNS, username="designer")
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "content-type": "application/json",
+        }
+        # Test with different process_key other than mapper process_key
+        rv = client.post(
+            "/process/migrate",
+            headers=headers,
+            json={"mapperId": mapper_id, "processKey": "twostepapproval"},
+        )
+        assert rv.status_code == 400
+        # Test with invalid mapper Id
+        rv = client.post(
+            "/process/migrate",
+            headers=headers,
+            json={"mapperId": 99, "processKey": "twostepapproval"},
+        )
+        assert rv.status_code == 400
