@@ -1,7 +1,7 @@
 """Tests for file log handler."""
 import os
 
-from api.utils.file_log_handler import register_log_handlers
+from formsflow_api_utils.utils import register_log_handlers
 
 
 def test_file_log_valid_data(app):
