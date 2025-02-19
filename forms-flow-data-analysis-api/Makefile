@@ -41,6 +41,7 @@ install: clean ## Install python virtrual environment
 	pip install --upgrade pip ;\
 	pip install -Ur requirements/prod-transformers.txt ;\
 	pip freeze | grep -v "pkg-resources" | sort > requirements.txt ;\
+	pip install python-jose ;\
 	pip install -Ur requirements/dev.txt  ;\
 	touch venv/bin/activate  # update so it's as new as requirements/prod.txt
 
