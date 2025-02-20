@@ -1,5 +1,5 @@
 """API endpoints for managing anonymous applications."""
-
+"tes"
 from http import HTTPStatus
 
 from flask import request
