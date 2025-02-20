@@ -44,6 +44,9 @@ jobs:
         id: pylint
         run: |
           pylint --rcfile=setup.cfg  src/api
+      - name: Debug environment variable
+    run: |
+      echo "JWT_OIDC_TEST_PRIVATE_KEY_PEM is set: ${#JWT_OIDC_TEST_PRIVATE_KEY_PEM} characters"
 
   Test:
     if: always()

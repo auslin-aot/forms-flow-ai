@@ -1,7 +1,6 @@
 """Test suite for application API endpoint."""
 import pytest  # noqa
-
-from formsflow_api_utils.utils import get_token, VIEW_SUBMISSIONS
+from formsflow_api_utils.utils import VIEW_SUBMISSIONS, get_token
 
 
 class TestFormResourceRenderPdf:
