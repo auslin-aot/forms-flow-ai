@@ -46,6 +46,14 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements/dev.txt
+      - name: Debug environment variable
+        run: |
+          echo "JWT_OIDC_TEST_PRIVATE_KEY_PEM is set: ${#JWT_OIDC_TEST_PRIVATE_KEY_PEM} characters"
+          echo "Test is set: ${#TEST} characters."
+          echo "${{ secrets.JWT_OIDC_TEST_PRIVATE_KEY_PEM }}"
+          SECRET_VAR="${{ secrets.JWT_OIDC_TEST_PRIVATE_KEY_PEM }}"
+          echo "Secret length: ${#SECRET_VAR} characters"
+          echo "GitHub JWT_OIDC_TEST_PRIVATE_KEY_PEM: $JWT_OIDC_TEST_PRIVATE_KEY_PEM"
       - name: Pylint
         id: pylint
         run: |
