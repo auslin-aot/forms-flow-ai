@@ -49,7 +49,7 @@ jobs:
       - name: Debug environment variable
         run: |
           echo "JWT_OIDC_TEST_PRIVATE_KEY_PEM is set: ${#JWT_OIDC_TEST_PRIVATE_KEY_PEM} characters"
-          echo "Test is set: ${#Test} characters."
+          echo "Test is set: ${#TEST} characters."
       - name: Pylint
         id: pylint
         run: |
