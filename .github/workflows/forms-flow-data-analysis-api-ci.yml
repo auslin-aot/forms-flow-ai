@@ -47,16 +47,13 @@ jobs:
       - name: Debug environment variable
         run: |
           echo "JWT_OIDC_TEST_PRIVATE_KEY_PEM is set: ${#JWT_OIDC_TEST_PRIVATE_KEY_PEM} characters"
+          SECRET_VAR="${{ secrets.JWT_OIDC_TEST_PRIVATE_KEY_PEM }}"
+          echo "Secret length: ${#SECRET_VAR} characters"
       
 
   Test:
     if: always()
-    needs: setup-job
-    steps:
-      - name: Debug environment variable
-        run: |
-          echo "JWT_OIDC_TEST_PRIVATE_KEY_PEM is set: ${#JWT_OIDC_TEST_PRIVATE_KEY_PEM} characters"
-    
+    needs: setup-job    
     env:
       FLASK_ENV: "testing"
       DATABASE_URL_TEST: "postgresql://postgres:postgres@localhost:6432/postgres"
