@@ -46,7 +46,7 @@ pyasn1==0.6.1
 pymssql==2.3.1
 pyrsistent==0.20.0
 python-dotenv==1.0.1
-python-jose==3.3.0
+python-jose==3.4.0
 pytz==2024.2
 regex==2024.9.11
 requests==2.32.3
