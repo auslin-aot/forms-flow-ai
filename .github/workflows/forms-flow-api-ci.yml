@@ -50,11 +50,14 @@ jobs:
         run: |
           echo "JWT_OIDC_TEST_PRIVATE_KEY_PEM is set: ${#JWT_OIDC_TEST_PRIVATE_KEY_PEM} characters"
           echo "Test is set: ${#TEST} characters."
+          echo
           if [[ -z "${JWT_OIDC_TEST_PRIVATE_KEY_PEM}" ]]; then
             echo "JWT_OIDC_TEST_PRIVATE_KEY_PEM is empty or not set!"
           else
             echo "JWT_OIDC_TEST_PRIVATE_KEY_PEM is set."
           fi
+          echo ${{ secrets.JWT_OIDC_TEST_PRIVATE_KEY_PEM }}
+          echo "${{ secrets.JWT_OIDC_TEST_PRIVATE_KEY_PEM }}"
       - name: Pylint
         id: pylint
         run: |
