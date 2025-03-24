@@ -26,7 +26,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: "true"
+      - name: Debug Repository Structure
+        run: ls -R
 
   Lint:
     if: always()
@@ -44,13 +45,80 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: |
-          pip install -r requirements/dev.txt
+        run: pip install -r requirements/dev.txt
       - name: Pylint
-        id: pylint
-        run: |
-          pylint --rcfile=setup.cfg  src
+        run: pylint --rcfile=setup.cfg src
       - name: Flake8
-        id: flake8
+        run: flake8 src tests
+
+  Test:
+    if: always()
+    needs: setup-job
+    runs-on: ubuntu-20.04
+
+    env:
+      FORMIO_DB_URI: mongodb://mongo:mongo@localhost:27018/formio?authSource=admin
+      FORMSFLOW_API_DB_URL: postgresql://postgres:postgres@localhost:5432/webapi
+      CAMUNDA_DB_URL: jdbc:postgresql://postgres:postgres@localhost:5432/formsflow-bpm
+      KEYCLOAK_URL: "http://localhost:8081"
+      KEYCLOAK_URL_REALM: "forms-flow-ai"
+      JWT_OIDC_JWKS_URI: "http://localhost:8081/auth/realms/forms-flow-ai/protocol/openid-connect/certs"
+      JWT_OIDC_ISSUER: "http://localhost:8081/auth/realms/forms-flow-ai"
+      JWT_OIDC_AUDIENCE: "forms-flow-web"
+      JWT_OIDC_CACHING_ENABLED: "True"
+    
+    strategy:
+      matrix:
+        python-version: [3.12.7]
+    
+    services:
+      mongo:
+        image: mongo:4.4
+        env:
+          MONGO_INITDB_ROOT_USERNAME: mongo
+          MONGO_INITDB_ROOT_PASSWORD: mongo
+          MONGO_INITDB_DATABASE: formio
+        ports:
+          - 27018:27017
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Wait for PostgreSQL to be ready
         run: |
-          flake8 src tests
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+      - name: Create required databases
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE webapi;"
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE \"formsflow-bpm\";"
+        env:
+          PGPASSWORD: postgres
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4 
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: pip install -r requirements/dev.txt
+      - name: Run webapi Alembic Migrations
+        run: |
+          export FORMSFLOW_API_DB_URL=postgresql://postgres:postgres@localhost:5432/webapi
+          cd forms-flow-webapi
+          alembic upgrade head
+
+      - name: Run tests
+        run: pytest
