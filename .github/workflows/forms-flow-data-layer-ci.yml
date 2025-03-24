@@ -93,32 +93,27 @@ jobs:
           --health-interval 10s 
           --health-timeout 5s 
           --health-retries 5
+    
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready -h localhost -p 5432 -U postgres; do
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
-      - name: Create required databases
-        run: |
-          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE webapi;"
-          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE \"formsflow-bpm\";"
-        env:
-          PGPASSWORD: postgres
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4 
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: pip install -r requirements/dev.txt
-      - name: Run webapi Alembic Migrations
-        run: |
-          export FORMSFLOW_API_DB_URL=postgresql://postgres:postgres@localhost:5432/webapi
-          cd forms-flow-webapi
-          alembic upgrade head
-
-      - name: Run tests
-        run: pytest
+        - uses: actions/checkout@v2
+        - name: Wait for PostgreSQL to be ready
+          run: |
+            until pg_isready -h localhost -p 5432 -U postgres; do
+              echo "Waiting for PostgreSQL..."
+              sleep 2
+            done
+        - name: Create required databases
+          run: |
+            PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE webapi;"
+            PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE \"formsflow-bpm\";"
+          env:
+            PGPASSWORD: postgres
+        - name: Set up Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v4 
+          with:
+            python-version: ${{ matrix.python-version }}
+        - name: Install dependencies
+          run: pip install -r requirements/dev.txt
+        - name: Run tests
+          run: pytest
