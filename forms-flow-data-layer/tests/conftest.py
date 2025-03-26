@@ -8,11 +8,10 @@ import pytest
 import strawberry
 from starlette.requests import Request
 
-from src.config.envs import ENVS
 from src.graphql.resolvers import Query
 
 from .utils import KeycloakTestTokenGenerator
-
+from src.config.envs import ENVS
 # Add the project root directory to Python path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
