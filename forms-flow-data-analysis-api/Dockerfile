@@ -1,5 +1,5 @@
 #Author: Kurian Benoy
-FROM python:3.12.6-slim
+FROM python:3.14.0rc1-slim
 
 # set label for image
 LABEL Name="formsflow"
