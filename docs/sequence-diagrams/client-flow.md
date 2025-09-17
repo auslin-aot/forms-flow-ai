@@ -23,6 +23,14 @@ sequenceDiagram
     deactivate web-api
     web-api ->> web: 
     deactivate web
+    web ->> web-api: Update drafts
+    Note over web,web-api: "PUT /application/:application-id"
+    activate web-api
+    web-api ->> web-api-db: Update draft and application
+    web-api-db -->> web-api: 
+    deactivate web-api
+    web-api ->> web: 
+    deactivate web
 
     Client ->> web: Submit Form
     activate web
