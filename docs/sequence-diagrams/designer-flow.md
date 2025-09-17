@@ -33,7 +33,6 @@ sequenceDiagram
     web-api-db -->> web-api : 
     web-api -->> web : 
     deactivate web-api
-    web -->> Designer : 
     deactivate web
 
     Designer ->> web: Update Form
@@ -52,7 +51,6 @@ sequenceDiagram
     web-api-db -->> web-api:
     web-api -->> web : 
     deactivate web-api
-    web -->> Designer : 
     deactivate web
 
     Designer ->> web: Update Workflow
@@ -63,8 +61,7 @@ sequenceDiagram
     web-api ->> web-api-db: Update process
     web-api-db -->> web-api:
     web-api -->> web:
-    deactivate web-api
-    web -->> Designer : 
+    deactivate web-api 
     deactivate web
 
     Designer ->> web: Publish Form
@@ -83,8 +80,8 @@ sequenceDiagram
     web-api-db -->> web-api:
     web-api ->> web-api-db: Update form mapper status
     web-api-db -->> web-api:
+    web-api -->> web:
     deactivate web-api
-    web-api -->> web: 
     deactivate web
     
 
