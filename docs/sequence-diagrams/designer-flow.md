@@ -76,8 +76,8 @@ sequenceDiagram
     activate bpm-api
     Note over web-api,bpm-api: "POST /deployment/create"
     bpm-api ->> bpm-db: Deploy workflow
-    bpm-db -->> bpm-api: Deployed workflow
-    bpm-api -->> web-api: Deployed workflow
+    bpm-db -->> bpm-api: 
+    bpm-api -->> web-api: Workflow deployed
     deactivate bpm-api
     web-api ->> web-api-db: Create audit records for form and process
     web-api-db -->> web-api:
