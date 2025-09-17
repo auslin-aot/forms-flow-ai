@@ -64,6 +64,17 @@ sequenceDiagram
     deactivate web-api 
     deactivate web
 
+    Designer ->> web: Update form settings
+    activate web
+    web ->> web-api: Update form mapper
+    Note over web,web-api: "PUT /form/:form-mapper-id"
+    activate web-api
+    web-api ->> web-api-db: Updateform mapper
+    web-api-db -->> web-api:
+    web-api -->> web:
+    deactivate web-api 
+    deactivate web
+
     Designer ->> web: Publish Form
     activate web
     web ->> web-api: Publish Form
@@ -82,10 +93,7 @@ sequenceDiagram
     web-api-db -->> web-api:
     web-api -->> web:
     deactivate web-api
-    deactivate web
-    
-
-    
+    deactivate web  
 
 
 
