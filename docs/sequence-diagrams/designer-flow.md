@@ -26,7 +26,7 @@ sequenceDiagram
     web-api ->> web-api-db: Create records in form process mapper
     web-api ->> web-api-db: Create audit records
     web-api ->> web-api-db: Create authorization records
-    web-api ->> web-api-db: Create default workflow
+    web-api ->> web-api-db: Create default workflow in process table
     web-api-db -->> web-api : 
     web-api -->> web : 
     deactivate web-api
