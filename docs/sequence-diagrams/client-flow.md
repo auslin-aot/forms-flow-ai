@@ -14,14 +14,27 @@ sequenceDiagram
     participant bpm-db as BPM Database
 
     alt Drafts enabled
-        loop While entering form data
-            Client ->> web: Enter form data
-            web ->> web-api: Save/Update draft
-            Note over web,web-api: "POST /draft" or "PUT /application/:application-id"
-            web-api ->> web-api-db: Save/Update draft and application
-            web-api-db -->> web-api: 
-            web-api -->> web: 
-        end
+        Client ->> web: Enter form data
+        activate web
+        web ->> web-api: Auto save drafts
+        Note over web,web-api: "POST /draft"
+        activate web-api
+        web-api ->> web-api-db: Save draft and application
+        web-api-db -->> web-api: 
+        deactivate web-api
+        web-api ->> web: 
+        deactivate web
+
+        Client ->> web: Enter form data
+        activate web
+        web ->> web-api: Update drafts
+        Note over web,web-api: "PUT /application/:application-id"
+        activate web-api
+        web-api ->> web-api-db: Update draft and application
+        web-api-db -->> web-api: 
+        deactivate web-api
+        web-api ->> web: 
+        deactivate web
     else Drafts not enabled
         Client ->> web: Enter form data
         Note over Client,web: (No draft save/update)
