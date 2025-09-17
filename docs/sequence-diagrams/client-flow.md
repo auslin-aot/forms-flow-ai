@@ -20,20 +20,17 @@ sequenceDiagram
         Note over web,web-api: "POST /draft"
         activate web-api
         web-api ->> web-api-db: Save draft and application
-        web-api-db -->> web-api: 
+        web-api-db -->> web-api:
+        web-api -->> web:
         deactivate web-api
-        web-api ->> web: 
-        deactivate web
-
-        Client ->> web: Enter form data
-        activate web
+    
         web ->> web-api: Update drafts
-        Note over web,web-api: "PUT /application/:application-id"
+        Note over web,web-api: "PUT /application/:id"
         activate web-api
-        web-api ->> web-api-db: Update draft and application
-        web-api-db -->> web-api: 
+        web-api ->> web-api-db: Update draft
+        web-api-db -->> web-api:
+        web-api -->> web:
         deactivate web-api
-        web-api ->> web: 
         deactivate web
     else Drafts not enabled
         Client ->> web: Enter form data
