@@ -36,6 +36,60 @@ sequenceDiagram
     web -->> Designer : 
     deactivate web
 
+    Designer ->> web: Update Form
+    activate web
+    web ->> web-api: Update form design
+    Note over web,web-api: "PUT /form/form-design/:form-id"
+    activate web-api
+    web-api ->> forms-api: Update form data to form.io
+    Note over web-api,forms-api: "POST /form"
+    activate forms-api
+    forms-api->>forms-db: Update form data
+    forms-db-->>forms-api: 
+    forms-api -->> web-api: Form updated
+    deactivate forms-api
+    web-api ->> web-api-db: Create audit records
+    web-api-db -->> web-api:
+    web-api -->> web : 
+    deactivate web-api
+    web -->> Designer : 
+    deactivate web
+
+    Designer ->> web: Update Workflow
+    activate web
+    web ->> web-api: Update process
+    Note over web,web-api: "PUT /process/:process-id"
+    activate web-api
+    web-api ->> web-api-db: Update process
+    web-api-db -->> web-api:
+    web-api -->> web:
+    deactivate web-api
+    web -->> Designer : 
+    deactivate web
+
+    Designer ->> web: Publish Form
+    activate web
+    web ->> web-api: Publish Form
+    Note over web,web-api: "POST /form/:form-mapper-id/publish"
+    activate web-api
+    web-api->>bpm-api: Deploy workflow
+    activate bpm-api
+    Note over web-api,bpm-api: "POST /deployment/create"
+    bpm-api ->> bpm-db: Deploy workflow
+    bpm-db -->> bpm-api: Deployed workflow
+    bpm-api -->> web-api: Deployed workflow
+    deactivate bpm-api
+    web-api ->> web-api-db: Create audit records for form and process
+    web-api-db -->> web-api:
+    web-api ->> web-api-db: Update form mapper status
+    web-api-db -->> web-api:
+    deactivate web-api
+    web-api -->> web: 
+    deactivate web
+    
+
+    
+
 
 
 ```
