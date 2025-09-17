@@ -36,7 +36,7 @@ sequenceDiagram
 
     alt Drafts enabled
         web ->> web-api: Submit application
-        Note over web,web-api: "POST /draft/:id/submit"
+        Note over web,web-api: "POST /application/:id/submit"
         activate web-api
         web-api->>web-api-db: Mark draft as INACTIVE
         web-api-db -->> web-api: 
