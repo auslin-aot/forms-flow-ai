@@ -2,3 +2,4 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch
 transformers[sentencepiece]
+urllib3>=2.6.0 # not directly required, pinned by Snyk to avoid a vulnerability
