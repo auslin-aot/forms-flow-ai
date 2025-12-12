@@ -1,4 +1,4 @@
-FROM python:3.11.7-slim-bookworm
+FROM python:3.14.2-slim-bookworm
 
 # set label for image
 LABEL Name="formsflow"
