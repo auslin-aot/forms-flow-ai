@@ -18,3 +18,4 @@ PyJWT
 redis
 lxml
 git+https://github.com/aot-technologies/forms-flow-ai.git@develop#subdirectory=forms-flow-api-utils
+marshmallow>=3.26.2 # not directly required, pinned by Snyk to avoid a vulnerability
